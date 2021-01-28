@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ASPex1.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace ASPex1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("EmployeePolicy")]
     public class EmployeesController : ControllerBase
     {
         private readonly EmployeeContext _context;
@@ -116,7 +118,7 @@ namespace ASPex1.Controllers
             new Employee
             {
                 Id = employee.Id,
-                Name = employee.Surname,
+                Name = employee.Name,
                 Surname = employee.Surname,
                 Position = employee.Position,
                 Salary = employee.Salary

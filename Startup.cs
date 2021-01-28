@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using ASPex1.Models;
+using ASPex1.Data;
 
 namespace ASPex1
 {
@@ -22,9 +23,19 @@ namespace ASPex1
         {
             //Agrega el contexto de base de datos para el contenedor de DI.
             //Especifica que el contexto de base de datos usará una base de datos en memoria.
+            //Ahora modificamos la base de datos que usará a la db definida en "Connection String" del appsettings
             services.AddDbContext<EmployeeContext>(opt =>
-               opt.UseInMemoryDatabase("EmployeeList"));
+                opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddControllers();
+
+            // Add Cors
+            services.AddCors(o => o.AddPolicy("EmployeePolicy", builder => {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,12 +50,16 @@ namespace ASPex1
 
             app.UseRouting();
 
+            app.UseCors();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            DummyData.Initialize(app);
         }
     }
 }
